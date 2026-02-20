@@ -174,8 +174,11 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Custom settings for the hostel application
 FACE_RECOGNITION_THRESHOLD = env('FACE_RECOGNITION_THRESHOLD', default=0.6)
-ADMIN_PASSWORD = env('ADMIN_PASSWORD', default='admin123')
 
 # File upload settings
 MAX_UPLOAD_SIZE = env('MAX_UPLOAD_SIZE', default=16 * 1024 * 1024)  # 16MB
 DATA_UPLOAD_MAX_MEMORY_SIZE = MAX_UPLOAD_SIZE
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles_build', 'static')
+MEDIA_URLS = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
