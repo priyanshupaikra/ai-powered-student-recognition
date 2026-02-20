@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Students - Hostel Face Recognition</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+    </style>
+</head>
+<body class="gradient-bg min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <div class="max-w-4xl mx-auto">
+            <div class="text-center mb-8">
+                <h1 class="text-4xl font-bold text-white mb-4">Search Students</h1>
+                <p class="text-gray-100">Find students using various search methods</p>
+            </div>
+            
+            <div class="bg-white rounded-lg shadow-xl p-8 mb-8">
+                <form method="POST" enctype="multipart/form-data" class="space-y-6">
+                    {% csrf_token %}
+                    <div>
+                        <label class="block text-gray-700 text-sm font-bold mb-2">Search Method</label>
+                        <select name="search_type" id="searchType" required onchange="toggleSearchFields()"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500">
+                            <option value="">Select Search Method</option>
+                            <option value="name">Search by Name</option>
+                            <option value="room_number">Search by Room Number</option>
+                            <option value="enrollment_number">Search by Enrollment Number</option>
+                            <option value="photo">Search by Photo (Face Recognition)</option>
+                            <option value="camera">Search by Camera (Live Face Recognition)</option>
+                        </select>
+                    </div>
+                    
+                    <div id="textSearch" style="display: none;">
+                        <label class="block text-gray-700 text-sm font-bold mb-2">Search Value</label>
+                        <input type="text" name="search_value"
+                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+                               placeholder="Enter search value">
+                    </div>
+                    
+                    <div id="photoSearch" style="display: none;">
+                        <label class="block text-gray-700 text-sm font-bold mb-2">Upload Photo for Recognition</label>
+                        <input type="file" name="search_photo" accept="image/*"
+                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500">
+                        <p class="text-sm text-gray-500 mt-1">Upload a photo to find matching student</p>
+                    </div>
+                    
+                    <div id="cameraSearch" style="display: none;">
+                        <label class="block text-gray-700 text-sm font-bold mb-2">Camera Face Recognition</label>
+                        <button type="button" id="startCameraBtn" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg font-medium transition duration-300">
+                            Start Camera
+                        </button>
+                        <div id="cameraContainer" class="mt-4" style="display: none;">
+                            <video id="video" width="100%" height="300" autoplay></video>
+                            <canvas id="canvas" width="640" height="480" style="display: none;"></canvas>
+                            <div id="recognitionResult" class="mt-4 p-4 bg-gray-100 rounded-lg" style="display: none;"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="flex justify-between items-center">
+                        <a href="{% url 'index' %}" class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 rounded-lg font-medium transition duration-300">Back to Home</a>
+                        <button type="submit" class="bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded-lg font-medium transition duration-300">Search</button>
+                    </div>
+                </form>
+                
+                {% if messages %}
+                    <div class="mt-4">
+                        {% for message in messages %}
+                            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-2">{{ message }}</div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+            
+            {% if results %}
+            <div class="bg-white rounded-lg shadow-xl p-8">
+                <h2 class="text-2xl font-bold mb-6 text-gray-800">Search Results</h2>
+                <div class="grid gap-6">
+                    {% for student in results %}
+                    <div class="border rounded-lg p-6 flex items-center space-x-6">
+                        <div class="flex-shrink-0">
+                            <img src="{{ student.photo_path }}" alt="Student Photo" class="w-24 h-24 rounded-full object-cover">
+                        </div>
+                        <div class="flex-grow">
+                            <h3 class="text-xl font-semibold text-gray-800">{{ student.name }}</h3>
+                            <div class="grid md:grid-cols-2 gap-2 mt-2 text-gray-600">
+                                <p><strong>Room Number:</strong> {{ student.room_number }}</p>
+                                <p>
+                                    <strong>Enrollment:</strong>
+                                    <a href="https://www.ipuranklist.com/student/{{ student.enrollment_number }}" style="color: blue;">
+                                      {{ student.enrollment_number }}
+                                    </a>
+                                </p>
+                                <p><strong>Mobile:</strong> {{ student.mobile_number }}</p>
+                                <p><strong>Course:</strong> {{ student.course }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <script>
+        function toggleSearchFields() {
+            const searchType = document.getElementById('searchType').value;
+            const textSearch = document.getElementById('textSearch');
+            const photoSearch = document.getElementById('photoSearch');
+            const cameraSearch = document.getElementById('cameraSearch');
+            
+            if (searchType === 'photo') {
+                textSearch.style.display = 'none';
+                photoSearch.style.display = 'block';
+                cameraSearch.style.display = 'none';
+            } else if (searchType === 'name' || searchType === 'room_number' || searchType === 'enrollment_number') {
+                textSearch.style.display = 'block';
+                photoSearch.style.display = 'none';
+                cameraSearch.style.display = 'none';
+            } else if (searchType === 'camera') {
+                textSearch.style.display = 'none';
+                photoSearch.style.display = 'none';
+                cameraSearch.style.display = 'block';
+            } else {
+                textSearch.style.display = 'none';
+                photoSearch.style.display = 'none';
+                cameraSearch.style.display = 'none';
+            }
+        }
+        
+        // Add camera functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const startCameraBtn = document.getElementById('startCameraBtn');
+            if (startCameraBtn) {
+                startCameraBtn.addEventListener('click', function() {
+                    startCamera();
+                });
+            }
+        });
+        
+        function startCamera() {
+            const video = document.getElementById('video');
+            const cameraContainer = document.getElementById('cameraContainer');
+            const canvas = document.getElementById('canvas');
+            
+            cameraContainer.style.display = 'block';
+            
+            // Access the device camera
+            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                navigator.mediaDevices.getUserMedia({ video: true })
+                    .then(function(stream) {
+                        video.srcObject = stream;
+                        video.play();
+                        
+                        // Start face recognition
+                        setInterval(function() {
+                            recognizeFace(video, canvas);
+                        }, 1000); // Check every second
+                    })
+                    .catch(function(err) {
+                        console.log("Camera error: " + err);
+                        alert("Could not access the camera. Please ensure you've granted permission.");
+                    });
+            } else {
+                alert("Your browser does not support camera access. Please try a different browser.");
+            }
+        }
+        
+        function recognizeFace(video, canvas) {
+            const context = canvas.getContext('2d');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            
+            // Send frame to server for recognition
+            canvas.toBlob(function(blob) {
+                const formData = new FormData();
+                formData.append('image', blob, 'frame.jpg');
+                formData.append('search_type', 'camera');
+                
+                fetch('/recognize_face/', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.match_found) {
+                        displayRecognitionResult(data.student);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+            }, 'image/jpeg');
+        }
+        
+        function displayRecognitionResult(student) {
+            const resultDiv = document.getElementById('recognitionResult');
+            resultDiv.style.display = 'block';
+            resultDiv.innerHTML = `
+                <h3 class="text-lg font-semibold">Match Found!</h3>
+                <div class="flex items-center mt-2">
+                    <img src="${student.photo_path}" alt="Student Photo" class="w-16 h-16 rounded-full object-cover mr-4">
+                    <div>
+                        <p class="font-medium">${student.name}</p>
+                        <p class="text-sm text-gray-600">Room: ${student.room_number}</p>
+                        <p class="text-sm text-gray-600">Enrollment: ${student.enrollment_number}</p>
+                    </div>
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>

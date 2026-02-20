@@ -1,0 +1,78 @@
+# Language-specific ignores (Python)
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+.coverage
+
+# Node.js (for completeness, not detected)
+node_modules/
+npm-debug.log
+yarn-debug.log
+
+# Go (for completeness, not detected)
+/vendor/
+*.test
+.go-cache/
+
+# Java (for completeness, not detected)
+target/
+*.class
+.gradle/
+
+# Development artifacts
+.idea/
+.vscode/
+*.swp
+*.swo
+dist/
+build/
+out/
+debug/
+*.log
+
+# Test files and folders
+test/
+tests/
+*_test.go
+
+# Version control
+.git/
+.gitignore
+.svn/
+.hg/
+
+# Environment and secrets
+.env*
+*.env
+*.pem
+*.key
+*.crt
+config.local.*
+*.local.yml
+
+# Project-specific patterns
+ignored files/
+docs/
+*.md
+README*
+Dockerfile*
+docker-compose*
+
+# Temporary and local files
+tmp/
+temp/
+*.tmp
+.local/
+local/
+
+# Miscellaneous
+models/  # empty directory, likely not needed in build
+
+# Static and template files (keep if needed for app, otherwise ignore subfolders if not used)
+# static/css/
+# static/js/
+# static/uploads/
+# templates/
+
+# End of .dockerignore

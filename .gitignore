@@ -1,0 +1,40 @@
+# Python cache and bytecode
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Environment
+.env
+
+# Ignored files directory
+ignored files/
+
+MIGRATION_COMPLETION.md
+MIGRATION_GUIDE.md
+MIGRATION_STATUS_COMPLETE.md
+MIGRATION_SUMMARY.md
+NEON_INTEGRATION_COMPLETE.md
+NEON_INTEGRATION_SUCCESS.md
+NEON_POSTGRESQL_GUIDE.md
+Readme1.md
+igonre.txt
+test_mongo_connection.py
+test_student_model.py
+test_db_connection.py
+test_neon_connection.py
+test_neon_connection_direct.py
+test_local_mongo.py
+test_mongo_connection.py
+test_app.py
+
+
+non usable files/
+verify_neon_connection_string.py
+verify_migration.py
+direct_mongo_test.py
+create_superuser.py
+setup_postgresql.py
+install_django.py
+run_neon_migrations.py
