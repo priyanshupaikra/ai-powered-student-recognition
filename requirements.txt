@@ -1,24 +1,18 @@
+# Core Django Framework
 Django
-pymongo
 django-environ
-opencv-python
-tensorflow
+dj-database-url
+
+# Database
+psycopg2-binary
+pymongo
+certifi
+
+# Face Recognition & AI
 face-recognition
-numpy
-Pillow
 dlib
 cmake
-psycopg2-binary
-dj-database-url
-scikit-learn
-matplotlib
-seaborn
-imutils
-requests
-python-dotenv
-django-cors-headers
-djangorestframework
-django-rest-knox
-whitenoise
-gunicorn
-django-extensions
+tensorflow
+opencv-python
+numpy
+Pillow
