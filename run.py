@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import os
 import sys
-import django
+# import django
 from django.core.management import execute_from_command_line
 
 def main():
